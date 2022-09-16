@@ -1,18 +1,60 @@
+const PizzaModel = require('../models/Pizza.model')
+
 const PizzaController = {
-    GetAll: (isClient, isServer) => {
-         isServer.status(200).json([])
+    GetAll: async (isClient, isServer) => {
+        const pizzas = await PizzaModel.findAll()
+
+         isServer.status(200).json(pizzas)
     },
-    GetById: (isClient, isServer) => {
-        isServer.status(200).json([])
+    GetById: async (isClient, isServer) => {
+        const { id } = isClient.params
+        const pizzaFound = await PizzaModel.findByPk(id)
+
+        if(!pizzaFound) {
+            isServer.status(404)
+        }
+        else {
+            isServer.status(200).json(pizzaFound)
+        }
     },
-    Create: (isClient, isServer) => {
-        isServer.status(201).json([])
+    Create: async (isClient, isServer) => {
+        const { id, name, description, size} = isClient.body
+        const newPizza = await PizzaModel.create(
+            { id, name, description, size}
+        ) 
+
+        if(!newPizza) {
+            isServer.status(400).json( {message: "Pizza can't created"} )
+        } else {
+            isServer.status(201).json(newPizza)
+        }
     },
-    UpdateById: (isClient, isServer) => {
-        isServer.status(200).json([])
+    UpdateById: async (isClient, isServer) => {
+        const { id } = isClient.params
+        const pizzaFound = await PizzaModel.findByPk(id)
+
+        if(!pizzaFound) {
+            isServer.status(400).json( {message: "Pizza can't updated"} )
+        }
+        else {
+            pizzaFound.set(isClient)
+            const pizzaUpdated = await pizzaFound.save()
+
+            isServer.status(200).json(pizzaUpdated)
+        }
     },
-    DeleteById: (isClient, isServer) => {
-        isServer.status(202).json(null)
+    DeleteById: async (isClient, isServer) => {
+        const { id } = isClient.params
+        const pizzaFound = await PizzaModel.findByPk(id)
+
+        if(!pizzaFound) {
+            isServer.status(400).json( {message: "Pizza can't deleted"} )
+        }
+        else {
+            pizzaFound.destroy()
+
+            isServer.status(200)
+        }
     }
 }
 

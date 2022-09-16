@@ -1,7 +1,13 @@
 const Express = require("express")
 const PizzaRouter = Express.Router()
 
-const { GetAll, GetById, UpdateById, DeleteById, Create } = require('../controllers/Pizza.Controller')
+const { 
+    GetAll, 
+    GetById, 
+    UpdateById, 
+    DeleteById, 
+    Create 
+} = require('../controllers/Pizza.Controller')
 
 PizzaRouter.get('/', GetAll)
 
